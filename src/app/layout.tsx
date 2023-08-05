@@ -1,9 +1,8 @@
 import { ReactNode } from 'react';
 import './globals.css';
-import { Inter } from 'next/font/google';
-import { Metadata } from 'next';
 
-const inter = Inter({ subsets: ['latin'] });
+import { Metadata } from 'next';
+import { darkGrotesque } from './fonts';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <body className={darkGrotesque.className}>{children}</body>
     </html>
   );
 };
