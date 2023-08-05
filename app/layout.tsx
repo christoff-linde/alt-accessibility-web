@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import './globals.css';
 
 import { Metadata } from 'next';
+import Navigation from './components/navigation';
 import { inter } from './fonts';
 
 export const metadata: Metadata = {
@@ -12,7 +13,10 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='en'>
-      <body className={(inter.className, 'm-6')}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Navigation />
+      </body>
     </html>
   );
 };
