@@ -60,7 +60,7 @@ const Navigation = () => {
   return (
     <div className='space-evenly fixed bottom-0 left-0 z-10 flex w-screen justify-center rounded-t-xl bg-gray-950'>
       {navLinks.map((link) => (
-        <div key={link.title}>
+        <div key={`nav-link-${link.index}`}>
           <Link href={link.path}>
             <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
               {activeIndex === link.index ? (
