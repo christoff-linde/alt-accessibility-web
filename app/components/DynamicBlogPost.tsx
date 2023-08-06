@@ -1,9 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
-import { postData } from '../page';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { TypedUseSelectorHook, useSelector } from 'react-redux';
+import { postData } from '../page';
+import { RootState } from '../store';
 
 const lorem = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce aliquam id dui eu gravida. Nunc imperdiet sagittis suscipit. Curabitur nec ultricies tortor, id dictum odio. Mauris et mi et nunc lacinia facilisis vitae sagittis sem. Integer rhoncus lorem in rutrum tincidunt. Maecenas bibendum dui at augue posuere fermentum. Pellentesque velit magna, porta in fringilla id, pretium et odio. Nulla suscipit efficitur sapien, a ornare elit facilisis sed. Curabitur a elementum ex. Aenean mattis ante eget nulla lacinia cursus. Donec sollicitudin vel nisi ac rutrum. Proin sapien lorem, posuere id consectetur eget, aliquam non purus.',
@@ -13,7 +15,10 @@ const lorem = [
   'Duis quam velit, porttitor ac ullamcorper eleifend, feugiat ut ipsum. Maecenas tincidunt, nisi a vestibulum bibendum, nulla eros vehicula magna, nec porttitor urna magna in nunc. Maecenas sapien urna, semper in tempor in, ultrices venenatis sem. Vivamus ornare erat sit amet tempus auctor. Pellentesque non diam sit amet urna tempus molestie. Fusce eleifend urna semper libero dictum condimentum. Phasellus gravida convallis est vel facilisis. In hac habitasse platea dictumst. Aenean ac malesuada quam. Curabitur sed enim in purus pharetra venenatis sed ac tellus. Proin tempor semper neque, sed auctor velit tincidunt eu. Sed fermentum consequat auctor. Donec ullamcorper, lacus vel tristique aliquet, elit velit bibendum ex, sit amet dignissim metus ipsum vulputate nisi. Curabitur et condimentum enim. Nulla mi nibh, lobortis non quam in, dictum bibendum tortor. Vivamus quis mauris vel orci semper malesuada eget ut tortor.',
 ];
 
+const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
 const DynamicBlogPost = () => {
+  const { fontSize } = useAppSelector((state) => state.theme);
   const params = useParams();
 
   const data = postData.filter((post) => post.id === params.id)[0];
@@ -46,7 +51,7 @@ const DynamicBlogPost = () => {
       <span className='text-sm text-gray-500'>
         Photo by <Link href={url}>Unsplash</Link>
       </span>
-      <div className='mt-4'>
+      <div className={fontSize}>
         {lorem.map((para, index) => (
           <p key={`post-para-${index}`} className='mb-4'>
             {para}
