@@ -1,4 +1,4 @@
-import BlogPost from '../components/blog-post';
+import BlogPost from '../components/BlogPost';
 
 const BlogPage = async () => {
   return (
