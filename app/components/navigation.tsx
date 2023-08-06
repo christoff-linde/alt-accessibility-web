@@ -17,8 +17,8 @@ import {
 import Link from 'next/link';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setActiveIndex, setFontSize } from '../store/themeSlice';
-import { FontSize } from '../types';
+import { setActiveIndex } from '../store/themeSlice';
+import ThemeSelector from './ThemeSelector';
 
 const navLinks = [
   {
@@ -45,7 +45,7 @@ const navLinks = [
   {
     index: 3,
     title: 'Blog',
-    path: '/',
+    path: '/blog',
     icon: NewspaperIcon,
     solidIcon: NewspaperIconSolid,
   },
@@ -64,58 +64,38 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 const Navigation = () => {
   const dispatch = useAppDispatch();
   const activeIndex = useAppSelector((state) => state.theme.activeIndex);
-  const fontSize = useAppSelector((state) => state.theme.fontSize);
 
-  const handleNavClick = (index: number) => {
-    let targetFontSize = undefined;
-    switch (index) {
-      case 0:
-        targetFontSize = FontSize.SMALL;
-        break;
-      case 1:
-        targetFontSize = FontSize.NORMAL;
-        break;
-      case 2:
-        targetFontSize = FontSize.MEDIUM;
-        break;
-      case 3:
-        targetFontSize = FontSize.LARGE;
-        break;
-      default:
-        targetFontSize = FontSize.NORMAL;
-        break;
-    }
-
-    dispatch(setFontSize(targetFontSize));
-    dispatch(setActiveIndex(index));
-  };
   return (
     <div
       className={
-        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen items-center justify-center rounded-t-xl bg-gray-950' +
-        ' ' +
-        fontSize
+        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center rounded-t-xl bg-gray-950'
       }
     >
-      {navLinks.map((link, linkIdx) => (
-        <div key={`nav-link-${linkIdx}-${link.title}`}>
-          <Link href={link.path} onClick={() => handleNavClick(linkIdx)}>
-            <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
-              {activeIndex === link.index ? (
-                <link.solidIcon className='h-6 w-6 text-blue-500' />
-              ) : (
-                <link.icon className='h-6 w-6' />
-              )}
+      <ThemeSelector />
+      <div className='space-evenly flex items-center justify-center'>
+        {navLinks.map((link, linkIdx) => (
+          <div key={`nav-link-${linkIdx}-${link.title}`}>
+            <Link
+              href={link.path}
+              onClick={() => dispatch(setActiveIndex(linkIdx))}
+            >
+              <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
+                {activeIndex === link.index ? (
+                  <link.solidIcon className='h-6 w-6 text-blue-500' />
+                ) : (
+                  <link.icon className='h-6 w-6' />
+                )}
 
-              {/* {link.title ? (
+                {/* {link.title ? (
                 <span className='text-gray-300'>{link.title}</span>
-              ) : (
-                <span className='text-transparent'>_</span>
-              )} */}
-            </div>
-          </Link>
-        </div>
-      ))}
+                ) : (
+                  <span className='text-transparent'>_</span>
+                )} */}
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
