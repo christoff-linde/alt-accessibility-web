@@ -14,7 +14,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='en'>
       <Providers>
-        <body className={inter.className}>
+        <body className={(inter.className, 'm-8')}>
           {children}
           <Navigation />
         </body>
