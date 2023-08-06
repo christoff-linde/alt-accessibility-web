@@ -51,7 +51,7 @@ const DynamicBlogPost = () => {
       <span className='text-sm text-gray-500'>
         Photo by <Link href={url}>Unsplash</Link>
       </span>
-      <div className={fontSize}>
+      <div className={fontSize + ' ' + 'mt-4'}>
         {lorem.map((para, index) => (
           <p key={`post-para-${index}`} className='mb-4'>
             {para}
