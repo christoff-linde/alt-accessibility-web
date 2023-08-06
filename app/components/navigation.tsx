@@ -2,20 +2,23 @@
 
 import {
   ArrowsRightLeftIcon,
-  NewspaperIcon,
+  Cog6ToothIcon,
   HomeIcon,
   MagnifyingGlassIcon,
-  Cog6ToothIcon,
+  NewspaperIcon,
 } from '@heroicons/react/24/outline';
 import {
   ArrowsRightLeftIcon as ArrowsRightLeftIconSolid,
-  NewspaperIcon as NewspaperIconSolid,
+  Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
-  Cog6ToothIcon as Cog6ToothIconSolid,
+  NewspaperIcon as NewspaperIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useState } from 'react';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { setActiveIndex, setFontSize } from '../store/themeSlice';
+import { FontSize } from '../types';
 
 const navLinks = [
   {
@@ -42,7 +45,7 @@ const navLinks = [
   {
     index: 3,
     title: 'Blog',
-    path: '/blog',
+    path: '/',
     icon: NewspaperIcon,
     solidIcon: NewspaperIconSolid,
   },
@@ -55,13 +58,48 @@ const navLinks = [
   },
 ];
 
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
 const Navigation = () => {
-  const [activeIndex] = useState(0);
+  const dispatch = useAppDispatch();
+  const activeIndex = useAppSelector((state) => state.theme.activeIndex);
+  const fontSize = useAppSelector((state) => state.theme.fontSize);
+
+  const handleNavClick = (index: number) => {
+    let targetFontSize = undefined;
+    switch (index) {
+      case 0:
+        targetFontSize = FontSize.SMALL;
+        break;
+      case 1:
+        targetFontSize = FontSize.NORMAL;
+        break;
+      case 2:
+        targetFontSize = FontSize.MEDIUM;
+        break;
+      case 3:
+        targetFontSize = FontSize.LARGE;
+        break;
+      default:
+        targetFontSize = FontSize.NORMAL;
+        break;
+    }
+
+    dispatch(setFontSize(targetFontSize));
+    dispatch(setActiveIndex(index));
+  };
   return (
-    <div className='space-evenly fixed bottom-0 left-0 z-10 flex w-screen justify-center rounded-t-xl bg-gray-950'>
-      {navLinks.map((link) => (
-        <div key={link.title}>
-          <Link href={link.path}>
+    <div
+      className={
+        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen items-center justify-center rounded-t-xl bg-gray-950' +
+        ' ' +
+        fontSize
+      }
+    >
+      {navLinks.map((link, linkIdx) => (
+        <div key={`nav-link-${linkIdx}-${link.title}`}>
+          <Link href={link.path} onClick={() => handleNavClick(linkIdx)}>
             <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
               {activeIndex === link.index ? (
                 <link.solidIcon className='h-6 w-6 text-blue-500' />
@@ -70,9 +108,9 @@ const Navigation = () => {
               )}
 
               {/* {link.title ? (
-                <span className='text-xs text-gray-300'>{link.title}</span>
+                <span className='text-gray-300'>{link.title}</span>
               ) : (
-                <span className='text-xs text-transparent'>_</span>
+                <span className='text-transparent'>_</span>
               )} */}
             </div>
           </Link>

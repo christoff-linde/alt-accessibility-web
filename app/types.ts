@@ -5,8 +5,8 @@ export enum LayoutOrientation {
 }
 
 export enum FontSize {
-  SMALL = 14,
-  NORMAL = 16,
-  MEDIUM = 18,
-  LARGE = 24,
+  SMALL = 'text-xs',
+  NORMAL = 'text-base',
+  MEDIUM = 'text-xl',
+  LARGE = 'text-2xl',
 }
