@@ -1,6 +1,7 @@
 import Card from './components/card';
+import { PostData } from './types';
 
-const postData = [
+export const postData: PostData[] = [
   {
     id: 'a-small-waterfall-in-the-middle-of-a-mountain-ILPltHaJzOU',
     title: 'A Small Waterfall In The Middle Of A Mountain',
@@ -52,7 +53,7 @@ const Home = () => {
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
         {postData.map((post) => (
           <Card
-            key={post.id}
+            key={`blog-post-${post.id}`}
             imageId={post.id}
             title={post.title}
             tags={post.tags}
