@@ -1,7 +1,12 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
+import { postData } from '../page';
 import { RootState } from '../store';
+import TagContainer from './Tags';
 
 const lorem = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce aliquam id dui eu gravida. Nunc imperdiet sagittis suscipit. Curabitur nec ultricies tortor, id dictum odio. Mauris et mi et nunc lacinia facilisis vitae sagittis sem. Integer rhoncus lorem in rutrum tincidunt. Maecenas bibendum dui at augue posuere fermentum. Pellentesque velit magna, porta in fringilla id, pretium et odio. Nulla suscipit efficitur sapien, a ornare elit facilisis sed. Curabitur a elementum ex. Aenean mattis ante eget nulla lacinia cursus. Donec sollicitudin vel nisi ac rutrum. Proin sapien lorem, posuere id consectetur eget, aliquam non purus.',
@@ -13,21 +18,40 @@ const lorem = [
 
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-const BlogPost = () => {
+const DynamicBlogPost = () => {
   const { fontSize } = useAppSelector((state) => state.theme);
+  const params = useParams();
+
+  const data = postData.filter((post) => post.id === params.id)[0];
+  const url = `https://source.unsplash.com/${data.id}`;
 
   return (
     <div>
-      <h1 className='mb-4 text-2xl'>Blog Post</h1>
-      <div className={fontSize}>
-        {lorem.map((ipsum, index) => (
-          <div key={`blog-paragraph-${index}`} className='mt-4'>
-            <p className='dark:prose-invert'>{ipsum}</p>
-          </div>
+      <h1 className='text-3xl font-bold'>{data.title}</h1>
+      <h2 className='pt-2 font-bold'>
+        <span className='font-normal italic'>written by </span>
+        {data.author}
+      </h2>
+      <TagContainer data={data.tags} />
+      <Image
+        className='mt-4 h-96 w-full rounded-lg object-cover'
+        src={url}
+        alt='placeholder'
+        width={1920}
+        height={384}
+      />
+      <span className='text-sm text-gray-500'>
+        Photo by <Link href={url}>Unsplash</Link>
+      </span>
+      <div className={fontSize + ' ' + 'mt-4'}>
+        {lorem.map((para, index) => (
+          <p key={`post-para-${index}`} className='mb-4'>
+            {para}
+          </p>
         ))}
       </div>
     </div>
   );
 };
 
-export default BlogPost;
+export default DynamicBlogPost;

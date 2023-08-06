@@ -5,8 +5,15 @@ export enum LayoutOrientation {
 }
 
 export enum FontSize {
-  SMALL = 'text-xs',
+  SMALL = 'text-sm',
   NORMAL = 'text-base',
   MEDIUM = 'text-xl',
   LARGE = 'text-2xl',
 }
+
+export type PostData = {
+  id: string;
+  title: string;
+  tags: string[];
+  author: string;
+};
