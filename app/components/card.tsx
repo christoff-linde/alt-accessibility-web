@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Suspense } from 'react';
 import Loading from '../loading';
 import Link from 'next/link';
+import TagContainer from './Tags';
 
 interface CardProps {
   imageId: string;
@@ -36,16 +37,7 @@ const Card = ({ imageId, title, tags, author }: CardProps) => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Repudiandae placeat cupiditate esse non corrupti ullam modi
             </p>
-            <div className='mt-1 flex gap-2'>
-              {tags.map((tag) => (
-                <span
-                  key={`post-title-tag-${tag}`}
-                  className='inline-flex items-center rounded-md bg-cyan-600/10 px-2 py-1 text-xs font-medium text-cyan-500 ring-1 ring-inset ring-cyan-200/10'
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <TagContainer data={tags} />
           </div>
         </div>
       </Link>

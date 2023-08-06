@@ -1,6 +1,7 @@
 import Card from './components/card';
+import { PostData } from './types';
 
-export const postData = [
+export const postData: PostData[] = [
   {
     id: 'a-small-waterfall-in-the-middle-of-a-mountain-ILPltHaJzOU',
     title: 'A Small Waterfall In The Middle Of A Mountain',

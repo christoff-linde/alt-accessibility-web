@@ -10,3 +10,10 @@ export enum FontSize {
   MEDIUM = 'text-xl',
   LARGE = 'text-2xl',
 }
+
+export type PostData = {
+  id: string;
+  title: string;
+  tags: string[];
+  author: string;
+};

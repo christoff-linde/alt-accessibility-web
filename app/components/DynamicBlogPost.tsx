@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { TypedUseSelectorHook, useSelector } from 'react-redux';
 import { postData } from '../page';
 import { RootState } from '../store';
+import TagContainer from './Tags';
 
 const lorem = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce aliquam id dui eu gravida. Nunc imperdiet sagittis suscipit. Curabitur nec ultricies tortor, id dictum odio. Mauris et mi et nunc lacinia facilisis vitae sagittis sem. Integer rhoncus lorem in rutrum tincidunt. Maecenas bibendum dui at augue posuere fermentum. Pellentesque velit magna, porta in fringilla id, pretium et odio. Nulla suscipit efficitur sapien, a ornare elit facilisis sed. Curabitur a elementum ex. Aenean mattis ante eget nulla lacinia cursus. Donec sollicitudin vel nisi ac rutrum. Proin sapien lorem, posuere id consectetur eget, aliquam non purus.',
@@ -31,16 +32,7 @@ const DynamicBlogPost = () => {
         <span className='font-normal italic'>written by </span>
         {data.author}
       </h2>
-      <div className='mt-2 flex gap-2'>
-        {data.tags.map((tag) => (
-          <span
-            key={`post-title-tag-${tag}`}
-            className='inline-flex items-center rounded-md bg-cyan-600/10 px-2 py-1 text-xs font-medium text-cyan-500 ring-1 ring-inset ring-cyan-200/10'
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+      <TagContainer data={data.tags} />
       <Image
         className='mt-4 h-96 w-full rounded-lg object-cover'
         src={url}
