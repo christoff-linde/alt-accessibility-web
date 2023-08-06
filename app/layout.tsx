@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
-import Navigation from './components/navigation';
+
+import Navigation from './components/Navigation';
 import Providers from './components/provider';
 import { inter } from './fonts';
 import './globals.css';
