@@ -1,9 +1,12 @@
 import BlogPost from '../components/BlogPost';
+import { postData } from '../page';
 
 const BlogPage = async () => {
   return (
     <div>
-      <BlogPost />
+      {postData.map((post) => (
+        <BlogPost key={`blog-post-${post.id}`} />
+      ))}
     </div>
   );
 };
