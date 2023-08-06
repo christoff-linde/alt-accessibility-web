@@ -2,20 +2,23 @@
 
 import {
   ArrowsRightLeftIcon,
-  NewspaperIcon,
+  Cog6ToothIcon,
   HomeIcon,
   MagnifyingGlassIcon,
-  Cog6ToothIcon,
+  NewspaperIcon,
 } from '@heroicons/react/24/outline';
 import {
   ArrowsRightLeftIcon as ArrowsRightLeftIconSolid,
-  NewspaperIcon as NewspaperIconSolid,
+  Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
-  Cog6ToothIcon as Cog6ToothIconSolid,
+  NewspaperIcon as NewspaperIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useState } from 'react';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { setActiveIndex } from '../store/themeSlice';
+import ThemeSelector from './ThemeSelector';
 
 const navLinks = [
   {
@@ -55,29 +58,44 @@ const navLinks = [
   },
 ];
 
-const Navigation = () => {
-  const [activeIndex] = useState(0);
-  return (
-    <div className='space-evenly fixed bottom-0 left-0 z-10 flex w-screen justify-center rounded-t-xl bg-gray-950'>
-      {navLinks.map((link) => (
-        <div key={link.title}>
-          <Link href={link.path}>
-            <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
-              {activeIndex === link.index ? (
-                <link.solidIcon className='h-6 w-6 text-blue-500' />
-              ) : (
-                <link.icon className='h-6 w-6' />
-              )}
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-              {/* {link.title ? (
-                <span className='text-xs text-gray-300'>{link.title}</span>
-              ) : (
-                <span className='text-xs text-transparent'>_</span>
-              )} */}
-            </div>
-          </Link>
-        </div>
-      ))}
+const Navigation = () => {
+  const dispatch = useAppDispatch();
+  const activeIndex = useAppSelector((state) => state.theme.activeIndex);
+
+  return (
+    <div
+      className={
+        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center rounded-t-xl bg-gray-950'
+      }
+    >
+      <ThemeSelector />
+      <div className='space-evenly flex items-center justify-center'>
+        {navLinks.map((link, linkIdx) => (
+          <div key={`nav-link-${linkIdx}-${link.title}`}>
+            <Link
+              href={link.path}
+              onClick={() => dispatch(setActiveIndex(linkIdx))}
+            >
+              <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
+                {activeIndex === link.index ? (
+                  <link.solidIcon className='h-6 w-6 text-blue-500' />
+                ) : (
+                  <link.icon className='h-6 w-6' />
+                )}
+
+                {/* {link.title ? (
+                <span className='text-gray-300'>{link.title}</span>
+                ) : (
+                  <span className='text-transparent'>_</span>
+                )} */}
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
