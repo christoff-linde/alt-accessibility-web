@@ -73,9 +73,10 @@ const Navigation = () => {
     >
       <ThemeSelector />
       <div className='space-evenly flex items-center justify-center'>
-        {navLinks.map((link, linkIdx) => (
-          <div key={`nav-link-${linkIdx}-${link.title}`}>
+        {navLinks.map((link, linkIdx) =>
+          link.title !== undefined ? (
             <Link
+              key={`nav-link-${linkIdx}-${link.title}`}
               href={link.path}
               onClick={() => dispatch(setActiveIndex(linkIdx))}
             >
@@ -85,19 +86,32 @@ const Navigation = () => {
                 ) : (
                   <link.icon className='h-6 w-6' />
                 )}
-
-                {/* {link.title ? (
-                <span className='text-gray-300'>{link.title}</span>
-                ) : (
-                  <span className='text-transparent'>_</span>
-                )} */}
               </div>
             </Link>
-          </div>
-        ))}
+          ) : (
+            <button
+              className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg bg-gray-900 p-1 transition-colors hover:bg-blue-500 hover:text-gray-950'
+              key={`nav-link-${linkIdx}-${link.title}`}
+            >
+              {activeIndex === link.index ? (
+                <link.solidIcon className='h-6 w-6 text-blue-500' />
+              ) : (
+                <link.icon className='h-6 w-6' />
+              )}
+            </button>
+          )
+        )}
       </div>
     </div>
   );
 };
 
 export default Navigation;
+
+{
+  /* {link.title ? (
+<span className='text-gray-300'>{link.title}</span>
+) : (
+  <span className='text-transparent'>_</span>
+)} */
+}
