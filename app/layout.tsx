@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ReactNode } from 'react';
 
+import BackButton from './components/BackButton';
 import Navigation from './components/Navigation';
 import Providers from './components/provider';
 import { inter } from './fonts';
@@ -16,6 +17,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
     <html lang='en'>
       <Providers>
         <body className={(inter.className, 'm-8')}>
+          <BackButton />
           {children}
           <Navigation />
         </body>

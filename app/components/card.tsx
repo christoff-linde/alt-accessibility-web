@@ -19,7 +19,7 @@ const Card = ({ imageId, title, tags, author }: CardProps) => {
       <Link href={`/blog/${imageId}`}>
         <Suspense fallback={<Loading />}>
           <Image
-            className='h-96 w-full rounded-lg object-cover'
+            className='h-64 w-full rounded-lg object-cover'
             src={url}
             alt='placeholder'
             width={400}

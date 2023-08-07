@@ -17,8 +17,9 @@ import {
 import Link from 'next/link';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setActiveIndex } from '../store/themeSlice';
+import { setActiveIndex, setOrientation } from '../store/themeSlice';
 import ThemeSelector from './ThemeSelector';
+import { useState } from 'react';
 
 const navLinks = [
   {
@@ -62,17 +63,34 @@ export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const Navigation = () => {
+  const [switchingLayout, setSwitchingLayout] = useState(false);
+
   const dispatch = useAppDispatch();
   const activeIndex = useAppSelector((state) => state.theme.activeIndex);
+  const orientation = useAppSelector((state) => state.theme.orientation);
+
+  const handleLayoutShift = () => {
+    if (switchingLayout) return;
+
+    setSwitchingLayout(true);
+    setTimeout(() => {
+      dispatch(setOrientation());
+      setSwitchingLayout(false);
+    }, 1500);
+  };
 
   return (
     <div
       className={
-        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center rounded-t-xl bg-gray-950'
+        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center rounded-t-xl bg-gray-950 gap-2'
       }
     >
       <ThemeSelector />
-      <div className='space-evenly flex items-center justify-center'>
+      <div
+        className={
+          orientation + ' ' + 'space-evenly flex items-center justify-center'
+        }
+      >
         {navLinks.map((link, linkIdx) =>
           link.title !== undefined ? (
             <Link
@@ -92,6 +110,7 @@ const Navigation = () => {
             <button
               className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg bg-gray-900 p-1 transition-colors hover:bg-blue-500 hover:text-gray-950'
               key={`nav-link-${linkIdx}-${link.title}`}
+              onClick={() => handleLayoutShift()}
             >
               {activeIndex === link.index ? (
                 <link.solidIcon className='h-6 w-6 text-blue-500' />

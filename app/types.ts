@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 export enum LayoutOrientation {
-  LEFT = 'left',
-  RIGHT = 'right',
+  LEFT = 'flex-row-reverse',
+  RIGHT = 'flex-row',
 }
 
 export enum FontSize {

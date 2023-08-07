@@ -24,8 +24,13 @@ const themeSlice = createSlice({
     setFontSize(state, action: PayloadAction<FontSize>) {
       state.fontSize = action.payload;
     },
-    setOrientation(state, action: PayloadAction<LayoutOrientation>) {
-      state.orientation = action.payload;
+    setOrientation(state) {
+      // state.orientation = action.payload;
+      if (state.orientation === LayoutOrientation.LEFT) {
+        state.orientation = LayoutOrientation.RIGHT;
+      } else {
+        state.orientation = LayoutOrientation.LEFT;
+      }
     },
   },
 });

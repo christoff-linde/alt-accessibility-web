@@ -34,7 +34,7 @@ const DynamicBlogPost = () => {
       </h2>
       <TagContainer data={data.tags} />
       <Image
-        className='mt-4 h-96 w-full rounded-lg object-cover'
+        className='mt-4 h-80 w-full rounded-lg object-cover'
         src={url}
         alt='placeholder'
         width={1920}
