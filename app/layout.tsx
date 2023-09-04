@@ -1,9 +1,11 @@
-import { ReactNode } from 'react';
-import './globals.css';
-
 import { Metadata } from 'next';
-import Navigation from './components/navigation';
+import { ReactNode } from 'react';
+
+import BackButton from './components/BackButton';
+import Navigation from './components/Navigation';
+import Providers from './components/Provider';
 import { inter } from './fonts';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -13,10 +15,13 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang='en'>
-      <body className={inter.className}>
-        {children}
-        <Navigation />
-      </body>
+      <Providers>
+        <body className={(inter.className, 'm-8')}>
+          <BackButton />
+          {children}
+          <Navigation />
+        </body>
+      </Providers>
     </html>
   );
 };
