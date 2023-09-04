@@ -82,7 +82,7 @@ const Navigation = () => {
   return (
     <div
       className={
-        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center rounded-t-xl bg-gray-950 gap-2'
+        'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center gap-2 rounded-t-xl bg-gray-950'
       }
     >
       <ThemeSelector />
