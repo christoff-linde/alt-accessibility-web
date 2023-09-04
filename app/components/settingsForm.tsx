@@ -2,7 +2,7 @@
 
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 const layoutOptions = [
   { title: 'Left-Handed', icon: CheckIcon },
@@ -10,9 +10,10 @@ const layoutOptions = [
 ];
 
 const fontSizeOptions = [
-  { title: 'Small', icon: CheckIcon },
-  { title: 'Medium', icon: CheckIcon },
-  { title: 'Large', icon: CheckIcon },
+  { title: 'XS', icon: CheckIcon },
+  { title: 'BASE', icon: CheckIcon },
+  { title: 'XL', icon: CheckIcon },
+  { title: '2XL', icon: CheckIcon },
 ];
 
 const SettingsForm = () => {
@@ -23,18 +24,10 @@ const SettingsForm = () => {
     fontSizeOptions[1]
   );
 
-  useMemo(() => {
-    console.log('enabled', selectedLayoutOption);
-  }, [selectedLayoutOption]);
-
-  useMemo(() => {
-    console.log('enabled', selectedFontSizeOption);
-  }, [selectedFontSizeOption]);
-
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
       <Listbox value={selectedLayoutOption} onChange={setSelectedLayoutOption}>
-        <div className='relative mt-1'>
+        <div className='relative z-10 mt-1'>
           <Listbox.Label className='mb-1'>Interface Layout</Listbox.Label>
           <Listbox.Button className='relative mt-1 w-full cursor-pointer rounded-lg bg-gray-900 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm'>
             <span className='block truncate'>{selectedLayoutOption.title}</span>
