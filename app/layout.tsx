@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 import BackButton from './components/BackButton';
 import Navigation from './components/Navigation';
-import Providers from './components/provider';
+import Providers from './components/Provider';
 import { inter } from './fonts';
 import './globals.css';
 
