@@ -445,6 +445,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/w3c-generic-sensor@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@types/w3c-generic-sensor@npm:1.0.6"
+  dependencies:
+    typescript: ^2.2.2
+  checksum: 776eab8798c7752b5bce809aedda99bd9a2cbf1e4274c874d25ea53e5c6cf006b13a37b521df522c76eab9dcfd15db12640b714ee29134099ca883f84f4425ee
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/parser@npm:^5.42.0":
   version: 5.62.0
   resolution: "@typescript-eslint/parser@npm:5.62.0"
@@ -585,6 +594,7 @@ __metadata:
     "@types/node": 20.3.3
     "@types/react": 18.2.14
     "@types/react-dom": 18.2.6
+    "@types/w3c-generic-sensor": ^1.0.6
     autoprefixer: 10.4.14
     eslint: 8.48.0
     eslint-config-next: ^13.4.10
@@ -4962,6 +4972,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:^2.2.2":
+  version: 2.9.2
+  resolution: "typescript@npm:2.9.2"
+  bin:
+    tsc: ./bin/tsc
+    tsserver: ./bin/tsserver
+  checksum: 88be998ac339b6e45f1cd15e22e4a0fedcdb5320d8d1d736e3996a0b9dff03728ebb2580a0658f0c52152b139ea9a405443f42a4ff8a2c4a1a6f4d58e0320132
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@5.2.2#~builtin<compat/typescript>":
   version: 5.2.2
   resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=14eedb"
@@ -4969,6 +4989,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 07106822b4305de3f22835cbba949a2b35451cad50888759b6818421290ff95d522b38ef7919e70fb381c5fe9c1c643d7dea22c8b31652a717ddbd57b7f4d554
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^2.2.2#~builtin<compat/typescript>":
+  version: 2.9.2
+  resolution: "typescript@patch:typescript@npm%3A2.9.2#~builtin<compat/typescript>::version=2.9.2&hash=3bafbf"
+  bin:
+    tsc: ./bin/tsc
+    tsserver: ./bin/tsserver
+  checksum: 8e4b4eceecd9c4c0d45a74e49d715eb7b12e0d4a12768b70681c9a81a7c2a335f15fe14c78dddda73c90f9ebb5ddac0b2e33c12df606c7d46f7e7829326cc653
   languageName: node
   linkType: hard
 
