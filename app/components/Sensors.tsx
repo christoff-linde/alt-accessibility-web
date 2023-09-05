@@ -12,17 +12,6 @@ const Sensors = () => {
   });
   const [lightLevel, setLightLevel] = useState(0);
 
-  navigator.permissions.query({ name: 'accelerometer' }).then((result) => {
-    if (result.state === 'denied') {
-      console.log('Permission to use accelerometer sensor is denied.');
-      return;
-    } else if (result.state === 'prompt') {
-      console.log('Permission to use accelerometer sensor is prompt.');
-      return;
-    }
-    // Use the sensor.
-  });
-
   const acl = new Accelerometer({ frequency: 60 });
   acl.addEventListener('reading', () => {
     setAcceleration({ x: acl.x ?? 0, y: acl.y ?? 0, z: acl.z ?? 0 });
