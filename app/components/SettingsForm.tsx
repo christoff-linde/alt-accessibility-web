@@ -1,27 +1,35 @@
 'use client';
 
+import { useAppDispatch, useAppSelector } from '@/app/components/Navigation';
+import { setFontSize, setOrientation } from '@/app/store/themeSlice';
+import { FontSize, LayoutOrientation } from '@/app/types';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline';
 import { Fragment, useState } from 'react';
 
-const layoutOptions = [
-  { title: 'Left-Handed', icon: CheckIcon },
-  { title: 'Right-Handed', icon: CheckIcon },
-];
-
-const fontSizeOptions = [
-  { title: 'XS', icon: CheckIcon },
-  { title: 'BASE', icon: CheckIcon },
-  { title: 'XL', icon: CheckIcon },
-  { title: '2XL', icon: CheckIcon },
-];
-
 const SettingsForm = () => {
+  const orientation = useAppSelector((state) => state.theme.orientation);
+  const fontSize = useAppSelector((state) => state.theme.fontSize);
+  const dispatch = useAppDispatch();
+
+  const layoutOptions = [
+    { value: LayoutOrientation.LEFT, title: 'Left-Handed', icon: CheckIcon },
+    { value: LayoutOrientation.RIGHT, title: 'Right-Handed', icon: CheckIcon },
+  ];
+
+  const fontSizeOptions = [
+    { value: FontSize.SMALL, icon: CheckIcon, title: 'XS' },
+    { value: FontSize.NORMAL, icon: CheckIcon, title: 'BASE' },
+    { value: FontSize.LARGE, icon: CheckIcon, title: 'XL' },
+  ];
+
   const [selectedLayoutOption, setSelectedLayoutOption] = useState(
-    layoutOptions[0]
+    layoutOptions.find((option) => option.value === orientation) ||
+      layoutOptions[1]
   );
   const [selectedFontSizeOption, setSelectedFontSizeOption] = useState(
-    fontSizeOptions[1]
+    fontSizeOptions.find((option) => option.value === fontSize) ||
+      fontSizeOptions[1]
   );
 
   return (
@@ -137,7 +145,10 @@ const SettingsForm = () => {
       <button
         type='button'
         className='mt-4 items-center justify-center rounded-lg bg-blue-600 p-2.5'
-        onClick={() => console.log('clicked')}
+        onClick={() => {
+          dispatch(setFontSize(selectedFontSizeOption.value));
+          dispatch(setOrientation(selectedLayoutOption.value));
+        }}
       >
         <span className='text-white'>Confirm</span>
       </button>
