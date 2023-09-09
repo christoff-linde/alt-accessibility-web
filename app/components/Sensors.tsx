@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { setOrientation } from '../store/themeSlice';
 import { LayoutOrientation } from '../types';
 import CustomButton from './Button';
@@ -48,6 +48,21 @@ const initAmbientLightSensor = (callback: Function) => {
   return lightSensor;
 };
 
+const initGravitySensor = (callback: Function) => {
+  const gravitySensor = new GravitySensor({ frequency: 60 });
+  gravitySensor.addEventListener('reading', () => {
+    callback({
+      x: gravitySensor.x ?? 0,
+      y: gravitySensor.y ?? 0,
+      z: gravitySensor.z ?? 0,
+    });
+  });
+  gravitySensor.addEventListener('error', (event) => {
+    console.warn(event.error.name, event.error.message);
+  });
+  return gravitySensor;
+};
+
 const initAbsoluteOrientationSensor = (callback: Function) => {
   const absoluteOrientationSensor = new AbsoluteOrientationSensor({
     frequency: 60,
@@ -71,6 +86,7 @@ const initAbsoluteOrientationSensor = (callback: Function) => {
 const Sensors = () => {
   const dispatch = useAppDispatch();
 
+  const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [gyroAcceleration, setGyroAcceleration] = useState({
     x: 0,
@@ -91,54 +107,34 @@ const Sensors = () => {
   const accelerometer = initAccelerometer(setAcceleration);
   const gyroscope = initGyroscope(setGyroAcceleration);
   const lightSensor = initAmbientLightSensor(setLightLevel);
-  const relativeOrientationSensor = initAbsoluteOrientationSensor(
+  const orientationSensor = initAbsoluteOrientationSensor(
     setAbsoluteOrientation
   );
+  const gravitySensor = initGravitySensor(setGravity);
 
-  const handleSensorActivate = useCallback(() => {
+  useMemo(() => {
     accelerometer.start();
-    lightSensor.start();
     gyroscope.start();
-    relativeOrientationSensor.start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSensorDeactivate = useCallback(() => {
-    accelerometer.stop();
-    lightSensor.stop();
-    gyroscope.stop();
-    relativeOrientationSensor.stop();
-
-    setAbsoluteOrientation({
-      x: 0,
-      y: 0,
-      z: 0,
-      w: 0,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    lightSensor.start();
+    orientationSensor.start();
+    gravitySensor.start();
   }, []);
 
   useEffect(() => {
-    if (absoluteOrientation.y > 0.5) {
-      dispatch(setOrientation(LayoutOrientation.LEFT));
-      setTimeout(() => {
-        setIsActive(false);
-      }, 500);
-    } else if (absoluteOrientation.y < -0.5) {
+    if (isActive && gravity.x > 5) {
+      setIsActive(false);
       dispatch(setOrientation(LayoutOrientation.RIGHT));
-      setTimeout(() => {
-        setIsActive(false);
-      }, 500);
+    } else if (isActive && gravity.x < -5) {
+      setIsActive(false);
+      dispatch(setOrientation(LayoutOrientation.LEFT));
     }
   }, [absoluteOrientation]);
 
   useMemo(() => {
     if (isActive) {
       setColorString('bg-green-600/10 ring-green-200/10 text-green-500');
-      handleSensorActivate();
     } else {
       setColorString('bg-red-600/10 ring-red-200/10 text-red-500');
-      handleSensorDeactivate();
     }
   }, [isActive]);
 
@@ -162,6 +158,18 @@ const Sensors = () => {
             {acceleration.z.toPrecision(3)}
           </p>
         </div>
+        <p className='mb-1 ml-1 text-lg'>Gravity Sensor</p>
+        <div className='grid w-full grid-cols-3 gap-2'>
+          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {gravity.x.toPrecision(3)}
+          </p>
+          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {gravity.y.toPrecision(3)}
+          </p>
+          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {gravity.z.toPrecision(3)}
+          </p>
+        </div>
         <p className='mb-1 ml-1 text-lg'>Ambient Light Sensor</p>
         <div className='grid w-full grid-cols-3 gap-2'>
           <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
@@ -180,7 +188,7 @@ const Sensors = () => {
             {gyroAcceleration.z.toPrecision(3)}
           </p>
         </div>
-        <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
+        {/* <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
         <div className='flex w-full gap-2'>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.x.toPrecision(2)}
@@ -193,7 +201,10 @@ const Sensors = () => {
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.z.toPrecision(2)}
           </p>
-        </div>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {absoluteOrientation.w.toPrecision(2)}
+          </p>
+        </div> */}
       </div>
       <div className='mt-4 flex gap-4'>
         <CustomButton onClick={() => setIsActive(true)}>Activate</CustomButton>
