@@ -15,11 +15,11 @@ import {
   NewspaperIcon as NewspaperIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import { useState } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { setActiveIndex, setOrientation } from '../store/themeSlice';
-import ThemeSelector from './ThemeSelector';
-import { useState } from 'react';
+import { LayoutOrientation } from '../types';
 
 const navLinks = [
   {
@@ -74,7 +74,13 @@ const Navigation = () => {
 
     setSwitchingLayout(true);
     setTimeout(() => {
-      dispatch(setOrientation());
+      dispatch(
+        setOrientation(
+          orientation === LayoutOrientation.LEFT
+            ? LayoutOrientation.RIGHT
+            : LayoutOrientation.LEFT
+        )
+      );
       setSwitchingLayout(false);
     }, 1500);
   };
@@ -85,7 +91,7 @@ const Navigation = () => {
         'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center gap-2 rounded-t-xl bg-gray-950'
       }
     >
-      <ThemeSelector />
+      {/* <ThemeSelector /> */}
       <div
         className={
           orientation + ' ' + 'space-evenly flex items-center justify-center'
