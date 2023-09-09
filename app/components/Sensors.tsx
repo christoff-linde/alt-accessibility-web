@@ -86,18 +86,20 @@ const Sensors = () => {
     lightSensor.start();
     gyroscope.start();
     relativeOrientationSensor.start();
-  }, [accelerometer, gyroscope, lightSensor, relativeOrientationSensor]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSensorDeactivate = useCallback(() => {
     accelerometer.stop();
     lightSensor.stop();
     gyroscope.stop();
     relativeOrientationSensor.stop();
-  }, [accelerometer, gyroscope, lightSensor, relativeOrientationSensor]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
-      <h2 className='text-xl my-2'>Sensor Readings</h2>
+      <h2 className='my-2 text-xl'>Sensor Readings</h2>
       <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
         <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
         <div className='grid w-full grid-cols-3 gap-2'>
