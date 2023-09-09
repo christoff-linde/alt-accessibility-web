@@ -1,8 +1,10 @@
+'use client';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import Loading from '../loading';
 import Link from 'next/link';
 import TagContainer from './Tags';
+import { useAppSelector } from './Navigation';
 
 interface CardProps {
   imageId: string;
@@ -13,6 +15,7 @@ interface CardProps {
 
 const Card = ({ imageId, title, tags, author }: CardProps) => {
   const url = `https://source.unsplash.com/${imageId}`;
+  const { fontSize } = useAppSelector((state) => state.theme);
 
   return (
     <div className='w-full rounded-lg bg-gray-900 text-white'>
@@ -32,7 +35,7 @@ const Card = ({ imageId, title, tags, author }: CardProps) => {
             <h1 className='font-bold lowercase'>{author}</h1>
           </div>
           <div>
-            <h2 className='pt-2 font-bold'>{title}</h2>
+            <h2 className={`${fontSize} font-bold`}>{title}</h2>
             <p className='hidden'>
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Repudiandae placeat cupiditate esse non corrupti ullam modi
