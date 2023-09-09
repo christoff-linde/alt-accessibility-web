@@ -15,11 +15,9 @@ import {
   NewspaperIcon as NewspaperIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useState } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setActiveIndex, setOrientation } from '../store/themeSlice';
-import { LayoutOrientation } from '../types';
+import { setActiveIndex } from '../store/themeSlice';
 
 const navLinks = [
   {
@@ -63,27 +61,9 @@ export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const Navigation = () => {
-  const [switchingLayout, setSwitchingLayout] = useState(false);
-
   const dispatch = useAppDispatch();
   const activeIndex = useAppSelector((state) => state.theme.activeIndex);
   const orientation = useAppSelector((state) => state.theme.orientation);
-
-  const handleLayoutShift = () => {
-    if (switchingLayout) return;
-
-    setSwitchingLayout(true);
-    setTimeout(() => {
-      dispatch(
-        setOrientation(
-          orientation === LayoutOrientation.LEFT
-            ? LayoutOrientation.RIGHT
-            : LayoutOrientation.LEFT
-        )
-      );
-      setSwitchingLayout(false);
-    }, 1500);
-  };
 
   return (
     <div
@@ -116,7 +96,6 @@ const Navigation = () => {
             <button
               className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg bg-gray-900 p-1 transition-colors hover:bg-blue-500 hover:text-gray-950'
               key={`nav-link-${linkIdx}-${link.title}`}
-              onClick={() => handleLayoutShift()}
             >
               {activeIndex === link.index ? (
                 <link.solidIcon className='h-6 w-6 text-blue-500' />
