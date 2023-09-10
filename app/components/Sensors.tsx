@@ -5,25 +5,29 @@ import { useEffect, useMemo, useState } from 'react';
 import { Shake } from '../lib/shake';
 import { setOrientation } from '../store/themeSlice';
 import { LayoutOrientation } from '../types';
-import { useAppDispatch } from './Navigation';
 import {
-  initAccelerometer,
-  initGyroscope,
-  initAmbientLightSensor,
   initAbsoluteOrientationSensor,
+  initAccelerometer,
+  initAmbientLightSensor,
   initGravitySensor,
+  initGyroscope,
 } from '../util/sensors';
+import { useAppDispatch } from './Navigation';
 
-const Sensors = () => {
-  const [shakeData, setShakeData] = useState<any>();
+const initShakeSensor = (callback: Function, dataEvent: Function) => {
   const shake = new Shake({ threshold: 25, timeout: 1000 });
   shake.addEventListener('shake', (event) => {
-    setShakeData(event.detail);
+    callback(true);
+    dataEvent(event.detail);
     console.log('Shake!', event.detail.timeStamp, event.detail.acceleration);
   });
+  return shake;
+};
 
+const Sensors = () => {
   const dispatch = useAppDispatch();
 
+  const [yeet, setYeet] = useState(false);
   const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [gyroAcceleration, setGyroAcceleration] = useState({
@@ -38,7 +42,8 @@ const Sensors = () => {
     z: 0,
     w: 0,
   });
-
+  const [shakeData, setShakeData] = useState<any>();
+  const [hasShaken, setHasShaken] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [colorString, setColorString] = useState('bg-red-600/10');
 
@@ -49,6 +54,7 @@ const Sensors = () => {
     setAbsoluteOrientation
   );
   const gravitySensor = initGravitySensor(setGravity);
+  const shakeSensor = initShakeSensor(setHasShaken, setShakeData);
 
   useMemo(() => {
     accelerometer.start();
@@ -56,18 +62,27 @@ const Sensors = () => {
     lightSensor.start();
     orientationSensor.start();
     gravitySensor.start();
-    shake.start();
+    shakeSensor.start();
   }, []);
 
   useEffect(() => {
+    // if (isActive && hasShaken) {
+    //   setIsActive(false);
+    //   setHasShaken(false);
+    // }
     if (isActive && gravity.x > 5) {
-      setIsActive(false);
       dispatch(setOrientation(LayoutOrientation.RIGHT));
-    } else if (isActive && gravity.x < -5) {
       setIsActive(false);
+    } else if (isActive && gravity.x < -5) {
       dispatch(setOrientation(LayoutOrientation.LEFT));
+      setIsActive(false);
     }
-  }, [absoluteOrientation]);
+    if (isActive && hasShaken) {
+      setIsActive(false);
+      setHasShaken(false);
+      setYeet(!yeet);
+    }
+  }, [absoluteOrientation, shakeData]);
 
   useMemo(() => {
     if (isActive) {
@@ -75,7 +90,7 @@ const Sensors = () => {
     } else {
       setColorString('bg-red-600/10 ring-red-200/10 text-red-500');
     }
-  }, [isActive]);
+  }, [absoluteOrientation]);
 
   return (
     <div>
@@ -84,6 +99,9 @@ const Sensors = () => {
       >
         Sensor Readings
       </h2>
+      <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+        {yeet.toString()}
+      </p>
       <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
         <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
         <div className='grid w-full grid-cols-3 gap-2'>
@@ -145,6 +163,12 @@ const Sensors = () => {
         <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
         <div className='grid w-full grid-cols-2 gap-2'>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            act: {isActive.toString()}
+          </p>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            shk: {hasShaken.toString()}
+          </p>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.x.toPrecision(2)}
           </p>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
@@ -159,13 +183,13 @@ const Sensors = () => {
         </div>
       </div>
       <div className='mt-4 flex gap-4'>
-        <button
+        {/* <button
           type='button'
           className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
           onClick={() => shake.start()}
         >
           Shake Start
-        </button>
+        </button> */}
         <button
           type='button'
           className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
