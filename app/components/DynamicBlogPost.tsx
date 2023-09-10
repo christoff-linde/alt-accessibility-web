@@ -7,6 +7,7 @@ import { TypedUseSelectorHook, useSelector } from 'react-redux';
 import { postData } from '../page';
 import { RootState } from '../store';
 import TagContainer from './Tags';
+import Heading from './Heading';
 
 const lorem = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce aliquam id dui eu gravida. Nunc imperdiet sagittis suscipit. Curabitur nec ultricies tortor, id dictum odio. Mauris et mi et nunc lacinia facilisis vitae sagittis sem. Integer rhoncus lorem in rutrum tincidunt. Maecenas bibendum dui at augue posuere fermentum. Pellentesque velit magna, porta in fringilla id, pretium et odio. Nulla suscipit efficitur sapien, a ornare elit facilisis sed. Curabitur a elementum ex. Aenean mattis ante eget nulla lacinia cursus. Donec sollicitudin vel nisi ac rutrum. Proin sapien lorem, posuere id consectetur eget, aliquam non purus.',
@@ -19,7 +20,7 @@ const lorem = [
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const DynamicBlogPost = () => {
-  const { fontSize, tagFontSize } = useAppSelector((state) => state.theme);
+  const { fontSize } = useAppSelector((state) => state.theme);
   const params = useParams();
 
   const data = postData.filter((post) => post.id === params.id)[0];
@@ -27,12 +28,13 @@ const DynamicBlogPost = () => {
 
   return (
     <div>
-      <h1 className='text-3xl font-bold'>{data.title}</h1>
+      {/* <h1 className={'text-3xl font-bold'}>{data.title}</h1> */}
+      <Heading>{data.title}</Heading>
       <h2 className='pt-2 font-bold'>
         <span className='font-normal italic'>written by </span>
         {data.author}
       </h2>
-      <TagContainer tagFontSize={tagFontSize} data={data.tags} />
+      <TagContainer data={data.tags} />
       <Image
         className='mt-4 h-80 w-full rounded-lg object-cover'
         src={url}

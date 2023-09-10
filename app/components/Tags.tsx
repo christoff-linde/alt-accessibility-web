@@ -1,8 +1,11 @@
-import { TagFontSize } from "../types";
+'use client';
 
-const TagContainer = ({ tagFontSize, data }: { tagFontSize: TagFontSize, data: string[] }) => {
+import { useAppSelector } from './Navigation';
+
+const TagContainer = ({ data }: { data: string[] }) => {
+  const tagFontSize = useAppSelector((state) => state.theme.tagFontSize);
   return (
-    <div className='mt-2 flex gap-2'>
+    <div className={`mt-2 flex gap-2 ${tagFontSize}`}>
       {data.map((tag) => (
         <span
           key={`post-title-tag-${tag}`}

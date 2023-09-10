@@ -15,10 +15,17 @@ export enum TagFontSize {
   SMALL = 'text-xs',
   NORMAL = 'text-sm',
   MEDIUM = 'text-base',
-  LARGE = 'text-lg'
+  LARGE = 'text-lg',
 }
 
 export enum TitleFontSize {
+  SMALL = 'text-2xl',
+  NORMAL = 'text-3xl',
+  MEDIUM = 'text-4xl',
+  LARGE = 'text-5xl',
+}
+
+export enum SubTitleFontSize {
   SMALL = 'text-base',
   NORMAL = 'text-lg',
   MEDIUM = 'text-xl',

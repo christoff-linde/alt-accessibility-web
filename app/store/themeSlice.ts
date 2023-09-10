@@ -1,6 +1,13 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import { AvatarSize, FontSize, LayoutOrientation, TagFontSize, TitleFontSize } from '../types';
+import {
+  AvatarSize,
+  FontSize,
+  LayoutOrientation,
+  SubTitleFontSize,
+  TagFontSize,
+  TitleFontSize,
+} from '../types';
 
 export interface ThemeState {
   orientation: LayoutOrientation;
@@ -8,7 +15,8 @@ export interface ThemeState {
   activeIndex: number;
   tagFontSize: TagFontSize;
   titleFontSize: TitleFontSize;
-  avatarSize: AvatarSize
+  subTitleFontSize: SubTitleFontSize;
+  avatarSize: AvatarSize;
 }
 
 const initialState: ThemeState = {
@@ -17,7 +25,8 @@ const initialState: ThemeState = {
   activeIndex: 0,
   tagFontSize: TagFontSize.NORMAL,
   titleFontSize: TitleFontSize.NORMAL,
-  avatarSize: AvatarSize.NORMAL
+  subTitleFontSize: SubTitleFontSize.NORMAL,
+  avatarSize: AvatarSize.NORMAL,
 };
 
 const themeSlice = createSlice({
@@ -29,6 +38,9 @@ const themeSlice = createSlice({
     },
     setFontSize(state, action: PayloadAction<FontSize>) {
       state.fontSize = action.payload;
+    },
+    setSubTitleFontSize(state, action: PayloadAction<SubTitleFontSize>) {
+      state.subTitleFontSize = action.payload;
     },
     setOrientation(state, action: PayloadAction<LayoutOrientation>) {
       state.orientation = action.payload;
@@ -45,6 +57,13 @@ const themeSlice = createSlice({
   },
 });
 
-export const { setActiveIndex, setFontSize, setOrientation, setTagFontSize, setTitleFontSize, setAvatarSize } =
-  themeSlice.actions;
+export const {
+  setActiveIndex,
+  setFontSize,
+  setOrientation,
+  setTagFontSize,
+  setTitleFontSize,
+  setSubTitleFontSize,
+  setAvatarSize,
+} = themeSlice.actions;
 export default themeSlice.reducer;
