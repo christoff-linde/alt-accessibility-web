@@ -2,9 +2,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { Shake } from '../lib/shake';
 import { setOrientation } from '../store/themeSlice';
 import { LayoutOrientation } from '../types';
-import CustomButton from './Button';
 import { useAppDispatch } from './Navigation';
 
 const initAccelerometer = (callback: Function) => {
@@ -84,6 +84,13 @@ const initAbsoluteOrientationSensor = (callback: Function) => {
 };
 
 const Sensors = () => {
+  const [shakeData, setShakeData] = useState<any>();
+  const shake = new Shake({ threshold: 25, timeout: 1000 });
+  shake.addEventListener('shake', (event) => {
+    setShakeData(event.detail);
+    console.log('Shake!', event.detail.timeStamp, event.detail.acceleration);
+  });
+
   const dispatch = useAppDispatch();
 
   const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
@@ -118,6 +125,7 @@ const Sensors = () => {
     lightSensor.start();
     orientationSensor.start();
     gravitySensor.start();
+    shake.start();
   }, []);
 
   useEffect(() => {
@@ -148,14 +156,29 @@ const Sensors = () => {
       <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
         <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
         <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {acceleration.x.toPrecision(3)}
           </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {acceleration.y.toPrecision(3)}
           </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {acceleration.z.toPrecision(3)}
+          </p>
+        </div>
+        <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
+        <div className='grid w-full grid-cols-2 gap-2'>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {shakeData?.timeStamp ?? 0}
+          </p>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {shakeData?.acceleration.x.toPrecision(3) ?? 0}
+          </p>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {shakeData?.acceleration.y.toPrecision(3) ?? 0}
+          </p>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {shakeData?.acceleration.z.toPrecision(3) ?? 0}
           </p>
         </div>
         <p className='mb-1 ml-1 text-lg'>Gravity Sensor</p>
@@ -188,14 +211,12 @@ const Sensors = () => {
             {gyroAcceleration.z.toPrecision(3)}
           </p>
         </div>
-        {/* <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
-        <div className='flex w-full gap-2'>
+        <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
+        <div className='grid w-full grid-cols-2 gap-2'>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.x.toPrecision(2)}
           </p>
-          <p
-            className={`w-full rounded-md p-2 ring-1 ring-inset ${colorString} font-bold`}
-          >
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.y.toPrecision(3)}
           </p>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
@@ -204,13 +225,23 @@ const Sensors = () => {
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
             {absoluteOrientation.w.toPrecision(2)}
           </p>
-        </div> */}
+        </div>
       </div>
       <div className='mt-4 flex gap-4'>
-        <CustomButton onClick={() => setIsActive(true)}>Activate</CustomButton>
-        <CustomButton onClick={() => setIsActive(false)}>
-          Deactivate
-        </CustomButton>
+        <button
+          type='button'
+          className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
+          onClick={() => shake.start()}
+        >
+          Shake Start
+        </button>
+        <button
+          type='button'
+          className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
+          onClick={() => setIsActive(true)}
+        >
+          Activate
+        </button>
       </div>
     </div>
   );
