@@ -19,7 +19,7 @@ const lorem = [
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const DynamicBlogPost = () => {
-  const { fontSize, titleFontSize, avatarSize, tagFontSize } = useAppSelector((state) => state.theme);
+  const { fontSize, tagFontSize } = useAppSelector((state) => state.theme);
   const params = useParams();
 
   const data = postData.filter((post) => post.id === params.id)[0];
