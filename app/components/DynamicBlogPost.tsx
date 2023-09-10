@@ -19,7 +19,7 @@ const lorem = [
 const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const DynamicBlogPost = () => {
-  const { fontSize } = useAppSelector((state) => state.theme);
+  const { fontSize, titleFontSize, avatarSize, tagFontSize } = useAppSelector((state) => state.theme);
   const params = useParams();
 
   const data = postData.filter((post) => post.id === params.id)[0];
@@ -32,7 +32,7 @@ const DynamicBlogPost = () => {
         <span className='font-normal italic'>written by </span>
         {data.author}
       </h2>
-      <TagContainer data={data.tags} />
+      <TagContainer tagFontSize={tagFontSize} data={data.tags} />
       <Image
         className='mt-4 h-80 w-full rounded-lg object-cover'
         src={url}
