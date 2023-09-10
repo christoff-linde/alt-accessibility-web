@@ -1,18 +1,20 @@
 'use client';
 
 import {
-  ArrowsRightLeftIcon,
+  // ArrowsRightLeftIcon,
   Cog6ToothIcon,
   HomeIcon,
   MagnifyingGlassIcon,
   NewspaperIcon,
+  ChartBarSquareIcon,
 } from '@heroicons/react/24/outline';
 import {
-  ArrowsRightLeftIcon as ArrowsRightLeftIconSolid,
+  // ArrowsRightLeftIcon as ArrowsRightLeftIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   NewspaperIcon as NewspaperIconSolid,
+  ChartBarSquareIcon as ChartBarSquareIconSolid,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
@@ -36,11 +38,18 @@ const navLinks = [
   },
   {
     index: 2,
-    title: undefined,
-    path: '/',
-    icon: ArrowsRightLeftIcon,
-    solidIcon: ArrowsRightLeftIconSolid,
+    title: 'Sensors',
+    path: '/sensors',
+    icon: ChartBarSquareIcon,
+    solidIcon: ChartBarSquareIconSolid,
   },
+  // {
+  //   index: 2,
+  //   title: undefined,
+  //   path: '/',
+  //   icon: ArrowsRightLeftIcon,
+  //   solidIcon: ArrowsRightLeftIconSolid,
+  // },
   {
     index: 3,
     title: 'Blog',
