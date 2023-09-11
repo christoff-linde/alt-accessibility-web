@@ -50,7 +50,7 @@ const Home = () => {
   return (
     <div>
       <h1 className='text-3xl font-bold'>ShareSphere</h1>
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4'>
+      <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
         {postData.map((post) => (
           <Card
             key={`blog-post-${post.id}`}
