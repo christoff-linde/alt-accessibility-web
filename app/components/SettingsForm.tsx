@@ -41,7 +41,9 @@ const SettingsForm = () => {
             Interface Layout
           </Listbox.Label>
           <Listbox.Button className='relative mt-1 w-full cursor-pointer rounded-lg bg-gray-900 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm'>
-            <span className='block truncate'>{selectedLayoutOption.title}</span>
+            <span className={`block truncate ${fontSize}`}>
+              {selectedLayoutOption.title}
+            </span>
             <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
               <ChevronUpDownIcon
                 className='h-5 w-5 text-gray-400'
@@ -62,7 +64,7 @@ const SettingsForm = () => {
                   className={({ active }) =>
                     `relative cursor-pointer select-none rounded-md py-2 pl-10 pr-4 ${
                       active ? 'bg-blue-500 text-gray-100' : 'text-gray-100'
-                    }`
+                    } ${fontSize}`
                   }
                   value={option}
                 >
@@ -71,7 +73,7 @@ const SettingsForm = () => {
                       <span
                         className={`block truncate ${
                           selected ? 'font-medium' : 'font-normal'
-                        }`}
+                        } ${fontSize}`}
                       >
                         {option.title}
                       </span>
@@ -98,7 +100,7 @@ const SettingsForm = () => {
             Font Size
           </Listbox.Label>
           <Listbox.Button className='relative mt-1 w-full cursor-pointer rounded-lg bg-gray-900 py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
-            <span className='block truncate'>
+            <span className={`block truncate ${fontSize}`}>
               {selectedFontSizeOption.title}
             </span>
             <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -149,7 +151,7 @@ const SettingsForm = () => {
       </Listbox>
       <button
         type='button'
-        className='mt-4 items-center justify-center rounded-lg bg-blue-600 p-2.5'
+        className={`mt-4 items-center justify-center rounded-lg bg-blue-600 p-2.5 ${fontSize}`}
         onClick={() => {
           dispatch(setFontSize(selectedFontSizeOption.value));
           dispatch(setOrientation(selectedLayoutOption.value));
