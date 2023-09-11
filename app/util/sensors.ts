@@ -1,5 +1,8 @@
 /* eslint-disable no-undef */
 'use client';
+
+import { Shake } from '../lib/shake';
+
 export const initAccelerometer = (callback: Function) => {
   const accelerometer = new Accelerometer({ frequency: 60 });
   accelerometer.addEventListener('reading', () => {
@@ -70,4 +73,14 @@ export const initAbsoluteOrientationSensor = (callback: Function) => {
     console.warn(event.error.name, event.error.message);
   });
   return absoluteOrientationSensor;
+};
+
+export const initShakeSensor = (callback: Function, dataEvent: Function) => {
+  const shake = new Shake({ threshold: 25, timeout: 1000 });
+  shake.addEventListener('shake', (event) => {
+    callback(true);
+    dataEvent(event.detail);
+    console.log('Shake!', event.detail.timeStamp, event.detail.acceleration);
+  });
+  return shake;
 };

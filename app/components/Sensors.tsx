@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Shake } from '../lib/shake';
 import {
   setFontSize,
   setLayoutSwitchActive,
@@ -22,19 +21,10 @@ import {
   initAmbientLightSensor,
   initGravitySensor,
   initGyroscope,
+  initShakeSensor,
 } from '../util/sensors';
 import { useAppDispatch, useAppSelector } from './Navigation';
 import SubHeading from './SubHeading';
-
-const initShakeSensor = (callback: Function, dataEvent: Function) => {
-  const shake = new Shake({ threshold: 25, timeout: 1000 });
-  shake.addEventListener('shake', (event) => {
-    callback(true);
-    dataEvent(event.detail);
-    console.log('Shake!', event.detail.timeStamp, event.detail.acceleration);
-  });
-  return shake;
-};
 
 // provide a optional prop to show debug info, and default to false
 const Sensors = ({ showDebug = false }) => {
