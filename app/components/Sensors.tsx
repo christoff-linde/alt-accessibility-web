@@ -3,16 +3,20 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  setAvatarSize,
   setFontSize,
   setLayoutSwitchActive,
   setOrientation,
   setSubTitleFontSize,
+  setTagFontSize,
   setTitleFontSize,
 } from '../store/themeSlice';
 import {
+  AvatarSize,
   FontSize,
   LayoutOrientation,
   SubTitleFontSize,
+  TagFontSize,
   TitleFontSize,
 } from '../types';
 import {
@@ -80,38 +84,52 @@ const Sensors = ({ showDebug = false }) => {
 
   useEffect(() => {
     if (hasShaken) {
+      // TODO this is horrible duplication of code from ThemeSelector.tsx. Refactor.
       dispatch(setLayoutSwitchActive(false));
       setHasShaken(false);
       let targetFontSize = FontSize.SMALL;
-      let targetSubtitleFontSize = SubTitleFontSize.SMALL;
-      let targetTitleFontSize = TitleFontSize.SMALL;
+      let targetTagSize = TagFontSize.SMALL;
+      let targetTitleSize = TitleFontSize.SMALL;
+      let targetSubTitleSize = SubTitleFontSize.SMALL;
+      let targetAvatarSize = AvatarSize.SMALL;
       switch (fontSize) {
         case FontSize.SMALL:
           targetFontSize = FontSize.NORMAL;
-          targetSubtitleFontSize = SubTitleFontSize.NORMAL;
-          targetTitleFontSize = TitleFontSize.NORMAL;
+          targetTagSize = TagFontSize.NORMAL;
+          targetTitleSize = TitleFontSize.NORMAL;
+          targetSubTitleSize = SubTitleFontSize.NORMAL;
+          targetAvatarSize = AvatarSize.NORMAL;
           break;
         case FontSize.NORMAL:
           targetFontSize = FontSize.MEDIUM;
-          targetSubtitleFontSize = SubTitleFontSize.MEDIUM;
-          targetTitleFontSize = TitleFontSize.MEDIUM;
+          targetTagSize = TagFontSize.MEDIUM;
+          targetTitleSize = TitleFontSize.MEDIUM;
+          targetSubTitleSize = SubTitleFontSize.MEDIUM;
+          targetAvatarSize = AvatarSize.MEDIUM;
           break;
         case FontSize.MEDIUM:
           targetFontSize = FontSize.LARGE;
-          targetSubtitleFontSize = SubTitleFontSize.LARGE;
-          targetTitleFontSize = TitleFontSize.LARGE;
+          targetTagSize = TagFontSize.LARGE;
+          targetTitleSize = TitleFontSize.LARGE;
+          targetSubTitleSize = SubTitleFontSize.LARGE;
+          targetAvatarSize = AvatarSize.LARGE;
           break;
         case FontSize.LARGE:
           targetFontSize = FontSize.SMALL;
-          targetSubtitleFontSize = SubTitleFontSize.SMALL;
-          targetTitleFontSize = TitleFontSize.SMALL;
+          targetTagSize = TagFontSize.SMALL;
+          targetTitleSize = TitleFontSize.SMALL;
+          targetSubTitleSize = SubTitleFontSize.SMALL;
+          targetAvatarSize = AvatarSize.SMALL;
           break;
         default:
           break;
       }
+
       dispatch(setFontSize(targetFontSize));
-      dispatch(setTitleFontSize(targetTitleFontSize));
-      dispatch(setSubTitleFontSize(targetSubtitleFontSize));
+      dispatch(setTagFontSize(targetTagSize));
+      dispatch(setTitleFontSize(targetTitleSize));
+      dispatch(setSubTitleFontSize(targetSubTitleSize));
+      dispatch(setAvatarSize(targetAvatarSize));
     }
   }, [shakeData]);
 

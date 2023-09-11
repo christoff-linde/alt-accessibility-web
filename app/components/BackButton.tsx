@@ -11,13 +11,16 @@ const BackButton = () => {
   const router = useRouter();
   const pathname = usePathname();
   const orientation = useAppSelector((state) => state.theme.orientation);
-
+  const fontSize = useAppSelector((state) => state.theme.fontSize);
   return (
     <div className={orientation + ' ' + 'mb-4 flex items-center font-bold'}>
       {pathname !== '/' ? (
-        <button onClick={() => router.back()} className='flex gap-2'>
+        <button
+          onClick={() => router.back()}
+          className='flex items-center gap-3'
+        >
           <ArrowLeftIcon className='h-6 w-6' />
-          <span>Back</span>
+          <span className={`${fontSize}`}>Back</span>
         </button>
       ) : null}
     </div>
