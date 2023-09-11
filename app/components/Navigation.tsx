@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { setActiveIndex } from '../store/themeSlice';
+import ThemeSelector from './ThemeSelector';
 
 const navLinks = [
   {
@@ -80,7 +81,8 @@ const Navigation = () => {
         'space-evenly fixed bottom-0 left-0 z-10 flex w-screen flex-col items-center justify-center gap-2 rounded-t-xl bg-gray-950'
       }
     >
-      {/* <ThemeSelector /> */}
+      {/* TODO remove once all functionality is working, just makes testing easier */}
+      <ThemeSelector />
       <div
         className={
           orientation + ' ' + 'space-evenly flex items-center justify-center'
