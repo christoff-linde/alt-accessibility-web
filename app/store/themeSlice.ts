@@ -13,6 +13,7 @@ export interface ThemeState {
   orientation: LayoutOrientation;
   fontSize: FontSize;
   activeIndex: number;
+  layoutSwitchActive: boolean;
   tagFontSize: TagFontSize;
   titleFontSize: TitleFontSize;
   subTitleFontSize: SubTitleFontSize;
@@ -23,6 +24,7 @@ const initialState: ThemeState = {
   orientation: LayoutOrientation.RIGHT,
   fontSize: FontSize.NORMAL,
   activeIndex: 0,
+  layoutSwitchActive: false,
   tagFontSize: TagFontSize.NORMAL,
   titleFontSize: TitleFontSize.NORMAL,
   subTitleFontSize: SubTitleFontSize.NORMAL,
@@ -35,6 +37,9 @@ const themeSlice = createSlice({
   reducers: {
     setActiveIndex(state, action: PayloadAction<number>) {
       state.activeIndex = action.payload;
+    },
+    setLayoutSwitchActive(state, action: PayloadAction<boolean>) {
+      state.layoutSwitchActive = action.payload;
     },
     setFontSize(state, action: PayloadAction<FontSize>) {
       state.fontSize = action.payload;
@@ -59,6 +64,7 @@ const themeSlice = createSlice({
 
 export const {
   setActiveIndex,
+  setLayoutSwitchActive,
   setFontSize,
   setOrientation,
   setTagFontSize,

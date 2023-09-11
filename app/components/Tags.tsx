@@ -5,7 +5,7 @@ import { useAppSelector } from './Navigation';
 const TagContainer = ({ data }: { data: string[] }) => {
   const tagFontSize = useAppSelector((state) => state.theme.tagFontSize);
   return (
-    <div className={`mt-2 flex gap-2 ${tagFontSize}`}>
+    <div className={`mt-2 flex flex-wrap gap-2 ${tagFontSize}`}>
       {data.map((tag) => (
         <span
           key={`post-title-tag-${tag}`}

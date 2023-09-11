@@ -14,13 +14,15 @@ import {
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   NewspaperIcon as NewspaperIconSolid,
 } from '@heroicons/react/24/solid';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
-import { setActiveIndex, setOrientation } from '../store/themeSlice';
-import { LayoutOrientation } from '../types';
-import ThemeSelector from './ThemeSelector';
+import { setActiveIndex, setLayoutSwitchActive } from '../store/themeSlice';
+const SensorsComponent = dynamic(() => import('../components/Sensors'), {
+  ssr: false,
+});
 
 const navLinks = [
   {
@@ -37,6 +39,13 @@ const navLinks = [
     icon: MagnifyingGlassIcon,
     solidIcon: MagnifyingGlassIconSolid,
   },
+  // {
+  //   index: 2,
+  //   title: 'Sensors',
+  //   path: '/sensors',
+  //   icon: ChartBarSquareIcon,
+  //   solidIcon: ChartBarSquareIconSolid,
+  // },
   {
     index: 2,
     title: undefined,
@@ -64,27 +73,31 @@ export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const Navigation = () => {
-  const [switchingLayout, setSwitchingLayout] = useState(false);
-
   const dispatch = useAppDispatch();
+  const layoutSwitchActive = useAppSelector(
+    (state) => state.theme.layoutSwitchActive
+  );
   const activeIndex = useAppSelector((state) => state.theme.activeIndex);
   const orientation = useAppSelector((state) => state.theme.orientation);
 
-  const handleLayoutShift = () => {
-    if (switchingLayout) return;
+  const [colorString, setColorString] = useState('text-gray-300');
 
-    setSwitchingLayout(true);
+  const handleLayoutShift = () => {
+    if (layoutSwitchActive) return;
+
+    dispatch(setLayoutSwitchActive(true));
     setTimeout(() => {
-      dispatch(
-        setOrientation(
-          orientation === LayoutOrientation.LEFT
-            ? LayoutOrientation.RIGHT
-            : LayoutOrientation.LEFT
-        )
-      );
-      setSwitchingLayout(false);
+      dispatch(setLayoutSwitchActive(false));
     }, 1500);
   };
+
+  useMemo(() => {
+    if (layoutSwitchActive) {
+      setColorString('bg-blue-500 text-gray-950');
+    } else {
+      setColorString('bg-gray-900');
+    }
+  }, [layoutSwitchActive]);
 
   return (
     <div
@@ -93,7 +106,7 @@ const Navigation = () => {
       }
     >
       {/* TODO remove once all functionality is working, just makes testing easier */}
-      <ThemeSelector />
+      {/* <ThemeSelector /> */}
       <div
         className={
           orientation + ' ' + 'space-evenly flex items-center justify-center'
@@ -106,7 +119,7 @@ const Navigation = () => {
               href={link.path}
               onClick={() => dispatch(setActiveIndex(linkIdx))}
             >
-              <div className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-1 transition-colors hover:text-blue-400'>
+              <div className='mt-2 flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-4 transition-colors hover:text-blue-400'>
                 {activeIndex === link.index ? (
                   <link.solidIcon className='h-6 w-6 text-blue-500' />
                 ) : (
@@ -116,7 +129,7 @@ const Navigation = () => {
             </Link>
           ) : (
             <button
-              className='flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg bg-gray-900 p-1 transition-colors hover:bg-blue-500 hover:text-gray-950'
+              className={`mt-2 flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-lg p-4 ${colorString}`}
               key={`nav-link-${linkIdx}-${link.title}`}
               onClick={() => handleLayoutShift()}
             >
@@ -129,6 +142,7 @@ const Navigation = () => {
           )
         )}
       </div>
+      <SensorsComponent />
     </div>
   );
 };

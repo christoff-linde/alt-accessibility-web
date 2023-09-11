@@ -1,71 +1,43 @@
 /* eslint-disable no-undef */
 'use client';
 
-import { useCallback, useState } from 'react';
-import CustomButton from './Button';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  setAvatarSize,
+  setFontSize,
+  setLayoutSwitchActive,
+  setOrientation,
+  setSubTitleFontSize,
+  setTagFontSize,
+  setTitleFontSize,
+} from '../store/themeSlice';
+import {
+  AvatarSize,
+  FontSize,
+  LayoutOrientation,
+  SubTitleFontSize,
+  TagFontSize,
+  TitleFontSize,
+} from '../types';
+import {
+  initAbsoluteOrientationSensor,
+  initAccelerometer,
+  initAmbientLightSensor,
+  initGravitySensor,
+  initGyroscope,
+  initShakeSensor,
+} from '../util/sensors';
+import { useAppDispatch, useAppSelector } from './Navigation';
+import SubHeading from './SubHeading';
 
-const initAccelerometer = (callback: Function) => {
-  const accelerometer = new Accelerometer({ frequency: 60 });
-  accelerometer.addEventListener('reading', () => {
-    callback({
-      x: accelerometer.x ?? 0,
-      y: accelerometer.y ?? 0,
-      z: accelerometer.z ?? 0,
-    });
-  });
-  accelerometer.addEventListener('error', (event) => {
-    console.warn(event.error.name, event.error.message);
-  });
-  return accelerometer;
-};
+// provide a optional prop to show debug info, and default to false
+const Sensors = ({ showDebug = false }) => {
+  const dispatch = useAppDispatch();
+  const { fontSize, subTitleFontSize, layoutSwitchActive } = useAppSelector(
+    (state) => state.theme
+  );
 
-const initGyroscope = (callback: Function) => {
-  const gyroscope = new Gyroscope({ frequency: 60 });
-  gyroscope.addEventListener('reading', () => {
-    callback({
-      x: gyroscope.x ?? 0,
-      y: gyroscope.y ?? 0,
-      z: gyroscope.z ?? 0,
-    });
-  });
-  gyroscope.addEventListener('error', (event) => {
-    console.warn(event.error.name, event.error.message);
-  });
-  return gyroscope;
-};
-
-const initAmbientLightSensor = (callback: Function) => {
-  const lightSensor = new AmbientLightSensor();
-  lightSensor.addEventListener('reading', () => {
-    callback(lightSensor?.illuminance ?? 0);
-  });
-  lightSensor.addEventListener('error', (event) => {
-    console.warn(event.error.name, event.error.message);
-  });
-  return lightSensor;
-};
-
-const initRelativeOrientationSensor = (callback: Function) => {
-  const relativeOrientationSensor = new RelativeOrientationSensor({
-    frequency: 60,
-  });
-  relativeOrientationSensor.addEventListener('reading', () => {
-    if (relativeOrientationSensor.quaternion) {
-      callback({
-        x: relativeOrientationSensor.quaternion[0] ?? 0,
-        y: relativeOrientationSensor.quaternion[1] ?? 0,
-        z: relativeOrientationSensor.quaternion[2] ?? 0,
-        w: relativeOrientationSensor.quaternion[3] ?? 0,
-      });
-    }
-  });
-  relativeOrientationSensor.addEventListener('error', (event) => {
-    console.warn(event.error.name, event.error.message);
-  });
-  return relativeOrientationSensor;
-};
-
-const Sensors = () => {
+  const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [gyroAcceleration, setGyroAcceleration] = useState({
     x: 0,
@@ -73,81 +45,192 @@ const Sensors = () => {
     z: 0,
   });
   const [lightLevel, setLightLevel] = useState(0);
-  const [orientation, setOrientation] = useState({ x: 0, y: 0, z: 0, w: 0 });
+  const [absoluteOrientation, setAbsoluteOrientation] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+    w: 0,
+  });
+  const [shakeData, setShakeData] = useState<any>();
+  const [hasShaken, setHasShaken] = useState(false);
 
   const accelerometer = initAccelerometer(setAcceleration);
   const gyroscope = initGyroscope(setGyroAcceleration);
   const lightSensor = initAmbientLightSensor(setLightLevel);
-  const relativeOrientationSensor =
-    initRelativeOrientationSensor(setOrientation);
+  const orientationSensor = initAbsoluteOrientationSensor(
+    setAbsoluteOrientation
+  );
+  const gravitySensor = initGravitySensor(setGravity);
+  const shakeSensor = initShakeSensor(setHasShaken, setShakeData);
 
-  const handleSensorActivate = useCallback(() => {
+  useMemo(() => {
     accelerometer.start();
-    lightSensor.start();
     gyroscope.start();
-    relativeOrientationSensor.start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    lightSensor.start();
+    orientationSensor.start();
+    gravitySensor.start();
+    shakeSensor.start();
   }, []);
 
-  const handleSensorDeactivate = useCallback(() => {
-    accelerometer.stop();
-    lightSensor.stop();
-    gyroscope.stop();
-    relativeOrientationSensor.stop();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => {
+    if (layoutSwitchActive && gravity.x > 5) {
+      dispatch(setOrientation(LayoutOrientation.RIGHT));
+      dispatch(setLayoutSwitchActive(false));
+    } else if (layoutSwitchActive && gravity.x < -5) {
+      dispatch(setOrientation(LayoutOrientation.LEFT));
+      dispatch(setLayoutSwitchActive(false));
+    }
+  }, [absoluteOrientation]);
+
+  useEffect(() => {
+    if (hasShaken) {
+      // TODO this is horrible duplication of code from ThemeSelector.tsx. Refactor.
+      dispatch(setLayoutSwitchActive(false));
+      setHasShaken(false);
+      let targetFontSize = FontSize.SMALL;
+      let targetTagSize = TagFontSize.SMALL;
+      let targetTitleSize = TitleFontSize.SMALL;
+      let targetSubTitleSize = SubTitleFontSize.SMALL;
+      let targetAvatarSize = AvatarSize.SMALL;
+      switch (fontSize) {
+        case FontSize.SMALL:
+          targetFontSize = FontSize.NORMAL;
+          targetTagSize = TagFontSize.NORMAL;
+          targetTitleSize = TitleFontSize.NORMAL;
+          targetSubTitleSize = SubTitleFontSize.NORMAL;
+          targetAvatarSize = AvatarSize.NORMAL;
+          break;
+        case FontSize.NORMAL:
+          targetFontSize = FontSize.MEDIUM;
+          targetTagSize = TagFontSize.MEDIUM;
+          targetTitleSize = TitleFontSize.MEDIUM;
+          targetSubTitleSize = SubTitleFontSize.MEDIUM;
+          targetAvatarSize = AvatarSize.MEDIUM;
+          break;
+        case FontSize.MEDIUM:
+          targetFontSize = FontSize.LARGE;
+          targetTagSize = TagFontSize.LARGE;
+          targetTitleSize = TitleFontSize.LARGE;
+          targetSubTitleSize = SubTitleFontSize.LARGE;
+          targetAvatarSize = AvatarSize.LARGE;
+          break;
+        case FontSize.LARGE:
+          targetFontSize = FontSize.SMALL;
+          targetTagSize = TagFontSize.SMALL;
+          targetTitleSize = TitleFontSize.SMALL;
+          targetSubTitleSize = SubTitleFontSize.SMALL;
+          targetAvatarSize = AvatarSize.SMALL;
+          break;
+        default:
+          break;
+      }
+
+      dispatch(setFontSize(targetFontSize));
+      dispatch(setTagFontSize(targetTagSize));
+      dispatch(setTitleFontSize(targetTitleSize));
+      dispatch(setSubTitleFontSize(targetSubTitleSize));
+      dispatch(setAvatarSize(targetAvatarSize));
+    }
+  }, [shakeData]);
 
   return (
     <div>
-      <h2 className='my-2 text-xl'>Sensor Readings</h2>
-      <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
-        <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.x.toPrecision(3)}
+      {showDebug && (
+        <>
+          <SubHeading>Device Sensors</SubHeading>
+          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+            {subTitleFontSize}
           </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.y.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.z.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Ambient Light Sensor</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {lightLevel.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Gyroscope</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.x.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.y.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.z.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Relative Orientation</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {orientation.x.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-red-600/10 p-2 ring-1 ring-inset ring-red-200/10'>
-            {orientation.y.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {orientation.z.toPrecision(3)}
-          </p>
-        </div>
-      </div>
-      <div className='mt-4 flex gap-4'>
-        <CustomButton onClick={handleSensorActivate}>Activate</CustomButton>
-        <CustomButton onClick={handleSensorDeactivate}>Deactivate</CustomButton>
-      </div>
+          <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
+            <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.x.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
+            <div className='grid w-full grid-cols-2 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.timeStamp ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.x.toPrecision(3) ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.y.toPrecision(3) ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.z.toPrecision(3) ?? 0}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Gravity Sensor</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.x.toPrecision(3)}
+              </p>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.y.toPrecision(3)}
+              </p>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Ambient Light Sensor</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {lightLevel.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Gyroscope</p>
+            <div className='flex w-full gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.x.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
+            <div className='grid w-full grid-cols-2 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                act: {layoutSwitchActive.toString()}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                shk: {hasShaken.toString()}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.x.toPrecision(2)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.z.toPrecision(2)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.w.toPrecision(2)}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type='button'
+            className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
+            onClick={() => dispatch(setLayoutSwitchActive(true))}
+          >
+            Activate
+          </button>
+        </>
+      )}
     </div>
   );
 };
