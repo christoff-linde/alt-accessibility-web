@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Shake } from '../lib/shake';
 import {
   setFontSize,
+  setLayoutSwitchActive,
   setOrientation,
   setSubTitleFontSize,
   setTitleFontSize,
@@ -38,9 +39,10 @@ const initShakeSensor = (callback: Function, dataEvent: Function) => {
 // provide a optional prop to show debug info, and default to false
 const Sensors = ({ showDebug = false }) => {
   const dispatch = useAppDispatch();
-  const { fontSize, subTitleFontSize } = useAppSelector((state) => state.theme);
+  const { fontSize, subTitleFontSize, layoutSwitchActive } = useAppSelector(
+    (state) => state.theme
+  );
 
-  const [yeet, setYeet] = useState(false);
   const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
   const [gyroAcceleration, setGyroAcceleration] = useState({
@@ -57,7 +59,6 @@ const Sensors = ({ showDebug = false }) => {
   });
   const [shakeData, setShakeData] = useState<any>();
   const [hasShaken, setHasShaken] = useState(false);
-  const [isActive, setIsActive] = useState(false);
 
   const accelerometer = initAccelerometer(setAcceleration);
   const gyroscope = initGyroscope(setGyroAcceleration);
@@ -78,24 +79,19 @@ const Sensors = ({ showDebug = false }) => {
   }, []);
 
   useEffect(() => {
-    // if (isActive && hasShaken) {
-    //   setIsActive(false);
-    //   setHasShaken(false);
-    // }
-    if (isActive && gravity.x > 5) {
+    if (layoutSwitchActive && gravity.x > 5) {
       dispatch(setOrientation(LayoutOrientation.RIGHT));
-      setIsActive(false);
-    } else if (isActive && gravity.x < -5) {
+      dispatch(setLayoutSwitchActive(false));
+    } else if (layoutSwitchActive && gravity.x < -5) {
       dispatch(setOrientation(LayoutOrientation.LEFT));
-      setIsActive(false);
+      dispatch(setLayoutSwitchActive(false));
     }
   }, [absoluteOrientation]);
 
   useEffect(() => {
     if (hasShaken) {
-      setIsActive(false);
+      dispatch(setLayoutSwitchActive(false));
       setHasShaken(false);
-      setYeet(!yeet);
       let targetFontSize = FontSize.SMALL;
       let targetSubtitleFontSize = SubTitleFontSize.SMALL;
       let targetTitleFontSize = TitleFontSize.SMALL;
@@ -198,7 +194,7 @@ const Sensors = ({ showDebug = false }) => {
             <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
             <div className='grid w-full grid-cols-2 gap-2'>
               <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-                act: {isActive.toString()}
+                act: {layoutSwitchActive.toString()}
               </p>
               <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
                 shk: {hasShaken.toString()}
@@ -217,17 +213,16 @@ const Sensors = ({ showDebug = false }) => {
               </p>
             </div>
           </div>
+
+          <button
+            type='button'
+            className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
+            onClick={() => dispatch(setLayoutSwitchActive(true))}
+          >
+            Activate
+          </button>
         </>
       )}
-      <div className='mt-4 flex gap-4'>
-        <button
-          type='button'
-          className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
-          onClick={() => setIsActive(true)}
-        >
-          Activate
-        </button>
-      </div>
     </div>
   );
 };
