@@ -16,9 +16,7 @@ interface CardProps {
 
 const Card = ({ imageId, title, tags, author }: CardProps) => {
   const url = `https://source.unsplash.com/${imageId}`;
-  const { fontSize, avatarSize } = useAppSelector(
-    (state) => state.theme
-  );
+  const { fontSize, avatarSize } = useAppSelector((state) => state.theme);
 
   return (
     <div className='w-full rounded-lg bg-gray-900 text-white'>
@@ -37,12 +35,12 @@ const Card = ({ imageId, title, tags, author }: CardProps) => {
             <div
               className={`inline-block ${avatarSize} rounded-full bg-slate-400`}
             />
-            <h1 className={`font-bold lowercase`}>{author}</h1>
+            <h1 className={`font-bold`}>{author}</h1>
           </div>
-          <div>
+          <div className='mt-2'>
             {/* <h2 className={`${fontSize} font-bold`}>{title}</h2> */}
             <SubHeading>{title}</SubHeading>
-            <p className={`${fontSize}`}>
+            <p className={`mt-2 ${fontSize}`}>
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Repudiandae placeat cupiditate esse non corrupti ullam modi
             </p>
