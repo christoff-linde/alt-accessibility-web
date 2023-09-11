@@ -21,6 +21,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { setActiveIndex } from '../store/themeSlice';
 import ThemeSelector from './ThemeSelector';
+import dynamic from 'next/dynamic';
+const SensorsComponent = dynamic(() => import('../components/Sensors'), {
+  ssr: false,
+});
 
 const navLinks = [
   {
@@ -117,6 +121,7 @@ const Navigation = () => {
           )
         )}
       </div>
+      <SensorsComponent />
     </div>
   );
 };

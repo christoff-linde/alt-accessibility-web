@@ -3,8 +3,18 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Shake } from '../lib/shake';
-import { setOrientation } from '../store/themeSlice';
-import { LayoutOrientation } from '../types';
+import {
+  setFontSize,
+  setOrientation,
+  setSubTitleFontSize,
+  setTitleFontSize,
+} from '../store/themeSlice';
+import {
+  FontSize,
+  LayoutOrientation,
+  SubTitleFontSize,
+  TitleFontSize,
+} from '../types';
 import {
   initAbsoluteOrientationSensor,
   initAccelerometer,
@@ -12,7 +22,8 @@ import {
   initGravitySensor,
   initGyroscope,
 } from '../util/sensors';
-import { useAppDispatch } from './Navigation';
+import { useAppDispatch, useAppSelector } from './Navigation';
+import SubHeading from './SubHeading';
 
 const initShakeSensor = (callback: Function, dataEvent: Function) => {
   const shake = new Shake({ threshold: 25, timeout: 1000 });
@@ -24,8 +35,10 @@ const initShakeSensor = (callback: Function, dataEvent: Function) => {
   return shake;
 };
 
-const Sensors = () => {
+// provide a optional prop to show debug info, and default to false
+const Sensors = ({ showDebug = false }) => {
   const dispatch = useAppDispatch();
+  const { fontSize, subTitleFontSize } = useAppSelector((state) => state.theme);
 
   const [yeet, setYeet] = useState(false);
   const [gravity, setGravity] = useState({ x: 0, y: 0, z: 0 });
@@ -45,7 +58,6 @@ const Sensors = () => {
   const [shakeData, setShakeData] = useState<any>();
   const [hasShaken, setHasShaken] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const [colorString, setColorString] = useState('bg-red-600/10');
 
   const accelerometer = initAccelerometer(setAcceleration);
   const gyroscope = initGyroscope(setGyroAcceleration);
@@ -77,119 +89,137 @@ const Sensors = () => {
       dispatch(setOrientation(LayoutOrientation.LEFT));
       setIsActive(false);
     }
-    if (isActive && hasShaken) {
+  }, [absoluteOrientation]);
+
+  useEffect(() => {
+    if (hasShaken) {
       setIsActive(false);
       setHasShaken(false);
       setYeet(!yeet);
+      let targetFontSize = FontSize.SMALL;
+      let targetSubtitleFontSize = SubTitleFontSize.SMALL;
+      let targetTitleFontSize = TitleFontSize.SMALL;
+      switch (fontSize) {
+        case FontSize.SMALL:
+          targetFontSize = FontSize.NORMAL;
+          targetSubtitleFontSize = SubTitleFontSize.NORMAL;
+          targetTitleFontSize = TitleFontSize.NORMAL;
+          break;
+        case FontSize.NORMAL:
+          targetFontSize = FontSize.MEDIUM;
+          targetSubtitleFontSize = SubTitleFontSize.MEDIUM;
+          targetTitleFontSize = TitleFontSize.MEDIUM;
+          break;
+        case FontSize.MEDIUM:
+          targetFontSize = FontSize.LARGE;
+          targetSubtitleFontSize = SubTitleFontSize.LARGE;
+          targetTitleFontSize = TitleFontSize.LARGE;
+          break;
+        case FontSize.LARGE:
+          targetFontSize = FontSize.SMALL;
+          targetSubtitleFontSize = SubTitleFontSize.SMALL;
+          targetTitleFontSize = TitleFontSize.SMALL;
+          break;
+        default:
+          break;
+      }
+      dispatch(setFontSize(targetFontSize));
+      dispatch(setTitleFontSize(targetTitleFontSize));
+      dispatch(setSubTitleFontSize(targetSubtitleFontSize));
     }
-  }, [absoluteOrientation, shakeData]);
-
-  useMemo(() => {
-    if (isActive) {
-      setColorString('bg-green-600/10 ring-green-200/10 text-green-500');
-    } else {
-      setColorString('bg-red-600/10 ring-red-200/10 text-red-500');
-    }
-  }, [absoluteOrientation]);
+  }, [shakeData]);
 
   return (
     <div>
-      <h2
-        className={`my-2 rounded-md p-2 text-xl ring-1 ring-inset ${colorString}`}
-      >
-        Sensor Readings
-      </h2>
-      <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-        {yeet.toString()}
-      </p>
-      <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
-        <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
+      {showDebug && (
+        <>
+          <SubHeading>Device Sensors</SubHeading>
           <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.x.toPrecision(3)}
+            {subTitleFontSize}
           </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.y.toPrecision(3)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {acceleration.z.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
-        <div className='grid w-full grid-cols-2 gap-2'>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {shakeData?.timeStamp ?? 0}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {shakeData?.acceleration.x.toPrecision(3) ?? 0}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {shakeData?.acceleration.y.toPrecision(3) ?? 0}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {shakeData?.acceleration.z.toPrecision(3) ?? 0}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Gravity Sensor</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gravity.x.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gravity.y.toPrecision(3)}
-          </p>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gravity.z.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Ambient Light Sensor</p>
-        <div className='grid w-full grid-cols-3 gap-2'>
-          <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {lightLevel.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Gyroscope</p>
-        <div className='flex w-full gap-2'>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.x.toPrecision(3)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.y.toPrecision(3)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {gyroAcceleration.z.toPrecision(3)}
-          </p>
-        </div>
-        <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
-        <div className='grid w-full grid-cols-2 gap-2'>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            act: {isActive.toString()}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            shk: {hasShaken.toString()}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {absoluteOrientation.x.toPrecision(2)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {absoluteOrientation.y.toPrecision(3)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {absoluteOrientation.z.toPrecision(2)}
-          </p>
-          <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
-            {absoluteOrientation.w.toPrecision(2)}
-          </p>
-        </div>
-      </div>
+          <div className='mt-1 rounded-md p-2 ring-1 ring-cyan-200/20'>
+            <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.x.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {acceleration.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Accelerometer</p>
+            <div className='grid w-full grid-cols-2 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.timeStamp ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.x.toPrecision(3) ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.y.toPrecision(3) ?? 0}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {shakeData?.acceleration.z.toPrecision(3) ?? 0}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Gravity Sensor</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.x.toPrecision(3)}
+              </p>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.y.toPrecision(3)}
+              </p>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gravity.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Ambient Light Sensor</p>
+            <div className='grid w-full grid-cols-3 gap-2'>
+              <p className='rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {lightLevel.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Gyroscope</p>
+            <div className='flex w-full gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.x.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {gyroAcceleration.z.toPrecision(3)}
+              </p>
+            </div>
+            <p className='mb-1 ml-1 text-lg'>Absolute Orientation</p>
+            <div className='grid w-full grid-cols-2 gap-2'>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                act: {isActive.toString()}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                shk: {hasShaken.toString()}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.x.toPrecision(2)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.y.toPrecision(3)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.z.toPrecision(2)}
+              </p>
+              <p className='w-full rounded-md bg-cyan-600/10 p-2 ring-1 ring-inset ring-cyan-200/10'>
+                {absoluteOrientation.w.toPrecision(2)}
+              </p>
+            </div>
+          </div>
+        </>
+      )}
       <div className='mt-4 flex gap-4'>
-        {/* <button
-          type='button'
-          className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
-          onClick={() => shake.start()}
-        >
-          Shake Start
-        </button> */}
         <button
           type='button'
           className='w-full items-center justify-center rounded-lg bg-blue-600 p-2.5'
