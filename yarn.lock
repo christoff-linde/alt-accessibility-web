@@ -386,10 +386,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.3.3":
-  version: 20.3.3
-  resolution: "@types/node@npm:20.3.3"
-  checksum: 7a0d00800451ca8cd8df63a8cc218c697edadb3143bf46cd6afeb974542a6a1665c3679459be0016c29216ccfed6616b7e55851747527dfa71c5608d9157528c
+"@types/node@npm:20.6.5":
+  version: 20.6.5
+  resolution: "@types/node@npm:20.6.5"
+  checksum: b849e849cf7631458a65c5019c81962028e306d8c4455a48422277b240f5a7eb8a1f1dafa60306bd4c773b77263bb8b05c074b1026e868bd137bb2022cf63ea2
   languageName: node
   linkType: hard
 
@@ -591,7 +591,7 @@ __metadata:
     "@heroicons/react": ^2.0.18
     "@reduxjs/toolkit": ^1.9.5
     "@tailwindcss/forms": ^0.5.6
-    "@types/node": 20.3.3
+    "@types/node": 20.6.5
     "@types/react": 18.2.14
     "@types/react-dom": 18.2.6
     "@types/w3c-generic-sensor": ^1.0.6
