@@ -40,6 +40,6 @@
     "lint-staged": "^13.2.3",
     "local-ssl-proxy": "^2.0.5",
     "prettier": "^3.0.0",
-    "prettier-plugin-tailwindcss": "^0.4.1"
+    "prettier-plugin-tailwindcss": "^0.5.6"
   }
 }
